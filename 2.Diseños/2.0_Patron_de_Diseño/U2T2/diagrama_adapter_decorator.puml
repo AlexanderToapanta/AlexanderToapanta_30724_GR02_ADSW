@@ -1,0 +1,88 @@
+@startuml
+title CRUD Estudiante - Adapter y Decorator
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "presentacion" {
+  class CRUDEstudiantesGUI
+  class PruebaAdapterDecorator
+}
+
+package "logica" {
+  class ControlEstudiante {
+    - servicioCrud: ServicioCrudEstudiante
+    - adaptadorEntrada: AdaptadorEntradaEstudiante
+    + agregarDesdeEntradaExterna(codigo: int, nombreCompleto: String, anios: int): String
+    + actualizarEstudiante(id: int, nuevoNombre: String, nuevaEdad: int): String
+    + eliminarEstudiante(id: int): String
+    + listarTodos(): List<Estudiante>
+  }
+
+  interface AdaptadorEntradaEstudiante {
+    + adaptar(entrada: EstudianteExterno): Estudiante
+  }
+
+  class AdaptadorEstudianteExterno <<Adapter>> {
+    + adaptar(entrada: EstudianteExterno): Estudiante
+  }
+
+  interface ServicioCrudEstudiante {
+    + agregar(estudiante: Estudiante): String
+    + actualizar(estudiante: Estudiante): String
+    + eliminar(id: int): String
+    + buscarPorId(id: int): Estudiante
+    + listarTodos(): List<Estudiante>
+  }
+
+  class CrudEstudianteBase {
+    - repo: RepositorioEstudiante
+  }
+
+  abstract class DecoradorCrudEstudiante <<Decorator>> {
+    # servicio: ServicioCrudEstudiante
+  }
+
+  class ValidacionCrudEstudianteDecorator <<Concrete Decorator>>
+  class AuditoriaCrudEstudianteDecorator <<Concrete Decorator>>
+}
+
+package "datos" {
+  class EstudianteExterno {
+    - codigo: int
+    - nombreCompleto: String
+    - anios: int
+  }
+
+  class RepositorioEstudiante
+}
+
+package "modelo" {
+  class Estudiante {
+    - id: int
+    - nombre: String
+    - edad: int
+  }
+}
+
+CRUDEstudiantesGUI --> ControlEstudiante
+PruebaAdapterDecorator --> ControlEstudiante
+
+ControlEstudiante --> AdaptadorEntradaEstudiante
+ControlEstudiante --> ServicioCrudEstudiante
+ControlEstudiante ..> EstudianteExterno
+
+AdaptadorEntradaEstudiante <|.. AdaptadorEstudianteExterno
+AdaptadorEstudianteExterno ..> EstudianteExterno
+AdaptadorEstudianteExterno ..> Estudiante
+
+ServicioCrudEstudiante <|.. CrudEstudianteBase
+ServicioCrudEstudiante <|.. DecoradorCrudEstudiante
+DecoradorCrudEstudiante o--> ServicioCrudEstudiante
+DecoradorCrudEstudiante <|-- ValidacionCrudEstudianteDecorator
+DecoradorCrudEstudiante <|-- AuditoriaCrudEstudianteDecorator
+
+CrudEstudianteBase --> RepositorioEstudiante
+RepositorioEstudiante o--> Estudiante
+ServicioCrudEstudiante ..> Estudiante
+@enduml

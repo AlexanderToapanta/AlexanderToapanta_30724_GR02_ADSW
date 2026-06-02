@@ -1,7 +1,7 @@
-package Implementacion.presentacion;
+package U2T1.presentacion;
 
-import Implementacion.logica.ControlEstudiante;
-import Implementacion.modelo.Estudiante;
+import U2T1.logica.ControlEstudiante;
+import U2T1.modelo.Estudiante;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +10,10 @@ import java.util.List;
 
 /**
  * CAPA: Presentacion
- * Responsabilidad: Interfaz grafica para que el Administrador Academico interactue
- * con el sistema. Captura entradas del usuario, delega operaciones a la capa de
- * Logica de Negocio (ControlEstudiante) y muestra los resultados.
- * Requisitos cubiertos: RF-01 (Agregar), RF-02 (Actualizar), RF-03 (Eliminar), RF-04 (Listar)
+ * Responsabilidad: capturar datos, invocar la logica de negocio y mostrar resultados.
  */
 public class CRUDEstudiantesGUI extends JFrame {
-    private final ControlEstudiante control;
+    private final ControlEstudiante control = new ControlEstudiante();
 
     private final JTextField txtId = new JTextField(10);
     private final JTextField txtNombre = new JTextField(20);
@@ -24,10 +21,7 @@ public class CRUDEstudiantesGUI extends JFrame {
     private final JTextArea areaSalida = new JTextArea(12, 40);
 
     public CRUDEstudiantesGUI() {
-        Estudiante prototipo = new Estudiante(0, "Sin Nombre", 18);
-        this.control = new ControlEstudiante(prototipo);
-
-        setTitle("CRUD Estudiantes - Patrones de Diseno");
+        setTitle("CRUD Estudiantes - Tres Capas");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initLayout();
         pack();
@@ -43,14 +37,12 @@ public class CRUDEstudiantesGUI extends JFrame {
         form.add(new JLabel("Edad:")); form.add(txtEdad);
 
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAgregarBuilder = new JButton("Agregar (Builder)");
-        JButton btnAgregarProto = new JButton("Agregar (Prototype)");
+        JButton btnAgregar = new JButton("Agregar");
         JButton btnActualizar = new JButton("Actualizar");
         JButton btnEliminar = new JButton("Eliminar");
         JButton btnListar = new JButton("Listar Todos");
 
-        botones.add(btnAgregarBuilder);
-        botones.add(btnAgregarProto);
+        botones.add(btnAgregar);
         botones.add(btnActualizar);
         botones.add(btnEliminar);
         botones.add(btnListar);
@@ -64,40 +56,21 @@ public class CRUDEstudiantesGUI extends JFrame {
 
         setContentPane(panel);
 
-        btnAgregarBuilder.addActionListener(this::onAgregarBuilder);
-        btnAgregarProto.addActionListener(this::onAgregarProto);
+        btnAgregar.addActionListener(this::onAgregar);
         btnActualizar.addActionListener(this::onActualizar);
         btnEliminar.addActionListener(this::onEliminar);
         btnListar.addActionListener(e -> actualizarLista());
     }
 
-    private void onAgregarBuilder(ActionEvent e) {
+    private void onAgregar(ActionEvent e) {
         try {
             int id = Integer.parseInt(txtId.getText().trim());
             String nombre = txtNombre.getText().trim();
             int edad = Integer.parseInt(txtEdad.getText().trim());
-            String res = control.agregarConBuilder(id, nombre, edad);
-            mostrarMensaje(res);
+            mostrarMensaje(control.agregarEstudiante(id, nombre, edad));
             actualizarLista();
         } catch (NumberFormatException ex) {
             mostrarMensaje("ID y Edad deben ser numeros enteros.");
-        } catch (IllegalArgumentException ex) {
-            mostrarMensaje(ex.getMessage());
-        }
-    }
-
-    private void onAgregarProto(ActionEvent e) {
-        try {
-            int id = Integer.parseInt(txtId.getText().trim());
-            String nombre = txtNombre.getText().trim();
-            int edad = Integer.parseInt(txtEdad.getText().trim());
-            String res = control.agregarConPrototipo(id, nombre, edad);
-            mostrarMensaje(res);
-            actualizarLista();
-        } catch (NumberFormatException ex) {
-            mostrarMensaje("ID y Edad deben ser numeros enteros.");
-        } catch (IllegalArgumentException ex) {
-            mostrarMensaje(ex.getMessage());
         }
     }
 
@@ -106,8 +79,7 @@ public class CRUDEstudiantesGUI extends JFrame {
             int id = Integer.parseInt(txtId.getText().trim());
             String nombre = txtNombre.getText().trim();
             int edad = Integer.parseInt(txtEdad.getText().trim());
-            String res = control.actualizarEstudiante(id, nombre, edad);
-            mostrarMensaje(res);
+            mostrarMensaje(control.actualizarEstudiante(id, nombre, edad));
             actualizarLista();
         } catch (NumberFormatException ex) {
             mostrarMensaje("ID y Edad deben ser numeros enteros.");
@@ -117,8 +89,7 @@ public class CRUDEstudiantesGUI extends JFrame {
     private void onEliminar(ActionEvent e) {
         try {
             int id = Integer.parseInt(txtId.getText().trim());
-            String res = control.eliminarEstudiante(id);
-            mostrarMensaje(res);
+            mostrarMensaje(control.eliminarEstudiante(id));
             actualizarLista();
         } catch (NumberFormatException ex) {
             mostrarMensaje("ID debe ser un numero entero.");
@@ -127,12 +98,13 @@ public class CRUDEstudiantesGUI extends JFrame {
 
     private void actualizarLista() {
         List<Estudiante> lista = control.listarTodos();
-        StringBuilder sb = new StringBuilder();
-        sb.append("--- LISTA DE ESTUDIANTES ---\n");
+        StringBuilder sb = new StringBuilder("--- LISTA DE ESTUDIANTES ---\n");
         if (lista.isEmpty()) {
             sb.append("(No hay estudiantes registrados)");
         } else {
-            for (Estudiante est : lista) sb.append(est).append('\n');
+            for (Estudiante estudiante : lista) {
+                sb.append(estudiante).append('\n');
+            }
         }
         areaSalida.setText(sb.toString());
     }
@@ -142,9 +114,6 @@ public class CRUDEstudiantesGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CRUDEstudiantesGUI gui = new CRUDEstudiantesGUI();
-            gui.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new CRUDEstudiantesGUI().setVisible(true));
     }
 }

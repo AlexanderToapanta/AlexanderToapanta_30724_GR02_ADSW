@@ -1,0 +1,54 @@
+@startuml
+title U2T1 - Arquitectura de tres capas para CRUD Estudiante
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "presentacion" {
+  class CRUDEstudiantesGUI {
+    - control: ControlEstudiante
+    + main(args: String[]): void
+  }
+
+  class PruebaCrudEstudiantes {
+    + main(args: String[]): void
+  }
+}
+
+package "logica" {
+  class ControlEstudiante {
+    - repo: RepositorioEstudiante
+    + agregarEstudiante(id: int, nombre: String, edad: int): String
+    + actualizarEstudiante(id: int, nuevoNombre: String, nuevaEdad: int): String
+    + eliminarEstudiante(id: int): String
+    + listarTodos(): List<Estudiante>
+    + validarDatos(id: int, nombre: String, edad: int): boolean
+  }
+}
+
+package "datos" {
+  class RepositorioEstudiante {
+    - estudiantes: List<Estudiante>
+    + guardar(estudiante: Estudiante): void
+    + buscarPorId(id: int): Estudiante
+    + actualizar(estudiante: Estudiante): void
+    + eliminar(id: int): void
+    + listarTodos(): List<Estudiante>
+    + existeId(id: int): boolean
+  }
+}
+
+package "modelo" {
+  class Estudiante {
+    - id: int
+    - nombre: String
+    - edad: int
+  }
+}
+
+CRUDEstudiantesGUI --> ControlEstudiante : usa
+PruebaCrudEstudiantes --> ControlEstudiante : prueba
+ControlEstudiante --> RepositorioEstudiante : coordina
+ControlEstudiante ..> Estudiante : valida/crea
+RepositorioEstudiante o--> Estudiante : almacena
+@enduml

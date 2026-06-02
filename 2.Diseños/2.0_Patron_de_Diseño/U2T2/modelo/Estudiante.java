@@ -2,7 +2,7 @@ package Implementacion.modelo;
 
 import java.util.Objects;
 
-public class Estudiante implements IPrototipoEstudiante {
+public class Estudiante {
     private int id;
     private String nombre;
     private int edad;
@@ -21,11 +21,6 @@ public class Estudiante implements IPrototipoEstudiante {
 
     public int getEdad() { return edad; }
     public void setEdad(int edad) { this.edad = edad; }
-
-    @Override
-    public Estudiante clonar() {
-        return new Estudiante(this.id, this.nombre, this.edad);
-    }
 
     @Override
     public String toString() {
