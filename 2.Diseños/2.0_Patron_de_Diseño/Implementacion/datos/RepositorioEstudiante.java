@@ -1,8 +1,15 @@
-package Implementacion;
+package Implementacion.datos;
 
+import Implementacion.modelo.Estudiante;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CAPA: Datos (Persistencia)
+ * Responsabilidad: Almacena y gestiona la coleccion de estudiantes en memoria.
+ * Provee operaciones CRUD de bajo nivel sin aplicar reglas de negocio.
+ * Requisitos cubiertos: RF-01 (guardar), RF-02 (actualizar), RF-03 (eliminar), RF-04 (listar)
+ */
 public class RepositorioEstudiante {
     private final List<Estudiante> estudiantes = new ArrayList<>();
 
@@ -30,7 +37,6 @@ public class RepositorioEstudiante {
         estudiantes.removeIf(e -> e.getId() == id);
     }
 
-    // Devolver una copia para proteger la lista interna
     public List<Estudiante> listarTodos() {
         return new ArrayList<>(estudiantes);
     }

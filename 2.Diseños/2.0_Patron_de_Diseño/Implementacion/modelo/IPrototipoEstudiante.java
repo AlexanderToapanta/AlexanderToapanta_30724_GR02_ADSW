@@ -1,4 +1,4 @@
-package Implementacion;
+package Implementacion.modelo;
 
 public interface IPrototipoEstudiante {
     Estudiante clonar();

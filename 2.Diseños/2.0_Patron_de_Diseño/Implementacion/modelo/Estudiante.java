@@ -1,4 +1,4 @@
-package Implementacion;
+package Implementacion.modelo;
 
 import java.util.Objects;
 

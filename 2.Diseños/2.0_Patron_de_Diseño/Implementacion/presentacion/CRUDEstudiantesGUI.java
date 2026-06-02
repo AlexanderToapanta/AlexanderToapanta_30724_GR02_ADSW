@@ -1,10 +1,20 @@
-package Implementacion;
+package Implementacion.presentacion;
+
+import Implementacion.logica.ControlEstudiante;
+import Implementacion.modelo.Estudiante;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
+/**
+ * CAPA: Presentacion
+ * Responsabilidad: Interfaz grafica para que el Administrador Academico interactue
+ * con el sistema. Captura entradas del usuario, delega operaciones a la capa de
+ * Logica de Negocio (ControlEstudiante) y muestra los resultados.
+ * Requisitos cubiertos: RF-01 (Agregar), RF-02 (Actualizar), RF-03 (Eliminar), RF-04 (Listar)
+ */
 public class CRUDEstudiantesGUI extends JFrame {
     private final ControlEstudiante control;
 
@@ -14,11 +24,10 @@ public class CRUDEstudiantesGUI extends JFrame {
     private final JTextArea areaSalida = new JTextArea(12, 40);
 
     public CRUDEstudiantesGUI() {
-        // Prototipo por defecto
         Estudiante prototipo = new Estudiante(0, "Sin Nombre", 18);
         this.control = new ControlEstudiante(prototipo);
 
-        setTitle("CRUD Estudiantes - Patrones");
+        setTitle("CRUD Estudiantes - Patrones de Diseno");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initLayout();
         pack();
@@ -26,7 +35,7 @@ public class CRUDEstudiantesGUI extends JFrame {
     }
 
     private void initLayout() {
-        JPanel panel = new JPanel(new BorderLayout(8,8));
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
 
         JPanel form = new JPanel(new FlowLayout(FlowLayout.LEFT));
         form.add(new JLabel("ID:")); form.add(txtId);
@@ -55,7 +64,6 @@ public class CRUDEstudiantesGUI extends JFrame {
 
         setContentPane(panel);
 
-        // Listeners
         btnAgregarBuilder.addActionListener(this::onAgregarBuilder);
         btnAgregarProto.addActionListener(this::onAgregarProto);
         btnActualizar.addActionListener(this::onActualizar);
@@ -88,6 +96,8 @@ public class CRUDEstudiantesGUI extends JFrame {
             actualizarLista();
         } catch (NumberFormatException ex) {
             mostrarMensaje("ID y Edad deben ser numeros enteros.");
+        } catch (IllegalArgumentException ex) {
+            mostrarMensaje(ex.getMessage());
         }
     }
 
@@ -119,7 +129,11 @@ public class CRUDEstudiantesGUI extends JFrame {
         List<Estudiante> lista = control.listarTodos();
         StringBuilder sb = new StringBuilder();
         sb.append("--- LISTA DE ESTUDIANTES ---\n");
-        for (Estudiante e : lista) sb.append(e).append('\n');
+        if (lista.isEmpty()) {
+            sb.append("(No hay estudiantes registrados)");
+        } else {
+            for (Estudiante est : lista) sb.append(est).append('\n');
+        }
         areaSalida.setText(sb.toString());
     }
 

@@ -1,5 +1,11 @@
-package Implementacion;
+package Implementacion.logica;
 
+import Implementacion.modelo.Estudiante;
+
+/**
+ * Patron Builder — construye un Estudiante paso a paso validando cada campo.
+ * Usado por ControlEstudiante para el caso de uso RF-01 (Agregar via Builder).
+ */
 public class EstudianteBuilder {
     private int id;
     private String nombre;
@@ -21,7 +27,6 @@ public class EstudianteBuilder {
     }
 
     public Estudiante build() {
-        // Validaciones simples antes de construir
         if (id <= 0) throw new IllegalArgumentException("ID debe ser mayor que 0");
         if (nombre == null || nombre.isEmpty()) throw new IllegalArgumentException("Nombre invalido");
         if (edad <= 0) throw new IllegalArgumentException("Edad invalida");
