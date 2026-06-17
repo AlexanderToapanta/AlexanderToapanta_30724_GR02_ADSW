@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 require_once __DIR__ . '/../includes/Auth.php';
 require_once __DIR__ . '/../services/UsuarioService.php';
 require_once __DIR__ . '/../dao/MembresiaDAO.php';
@@ -14,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$service = new UsuarioService();
 $payload = obtenerPayloadAuth();
 $accion = $_GET['action'] ?? $payload['action'] ?? 'me';
 
@@ -22,6 +24,7 @@ try {
     switch ($accion) {
         case 'login':
             asegurarPostAuth();
+            $service = new UsuarioService();
             $usuario = $service->autenticar(
                 (string) ($payload['correo'] ?? $payload['email'] ?? ''),
                 (string) ($payload['contrasena'] ?? $payload['contraseña'] ?? '')
@@ -53,6 +56,7 @@ try {
 } catch (InvalidArgumentException | DomainException $error) {
     responderAuth(['success' => false, 'message' => $error->getMessage()], 422);
 } catch (Throwable $error) {
+    error_log((string) $error);
     responderAuth(['success' => false, 'message' => 'Error interno del servidor.'], 500);
 }
 

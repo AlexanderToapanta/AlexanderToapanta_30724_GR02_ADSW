@@ -14,7 +14,7 @@
     async function verificarSesionActiva() {
         const respuesta = await fetch(`${AUTH_URL}?action=me`, { credentials: 'same-origin' });
         if (respuesta.ok) {
-            const cuerpo = await respuesta.json();
+            const cuerpo = await leerJsonSeguro(respuesta);
             if (cuerpo.success) {
                 window.location.href = 'index.html';
             }
@@ -52,5 +52,14 @@
     function mostrarEstado(mensaje, tipo) {
         statusMessage.textContent = mensaje;
         statusMessage.className = `status show ${tipo}`;
+    }
+
+    async function leerJsonSeguro(respuesta) {
+        const texto = await respuesta.text();
+        try {
+            return JSON.parse(texto);
+        } catch (error) {
+            throw new Error('El servidor no devolvio una respuesta JSON valida. Revisa los logs de Render.');
+        }
     }
 })();
