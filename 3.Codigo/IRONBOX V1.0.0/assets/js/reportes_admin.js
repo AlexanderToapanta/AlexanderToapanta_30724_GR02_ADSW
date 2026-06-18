@@ -84,7 +84,7 @@
     }
 
     async function solicitar(accion, filtros) {
-        const query = new URLSearchParams({ action, ...filtros });
+        const query = new URLSearchParams({ action: accion, ...filtros });
         const respuesta = await fetch(`${API_URL}?${query.toString()}`);
         const cuerpo = await respuesta.json();
 
